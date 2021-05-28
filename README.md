@@ -1,53 +1,44 @@
-# Spirit
+# Spirit + Django Cloud Deployer
 
-[![Build Status](https://img.shields.io/github/workflow/status/nitely/Spirit/CI/master?style=flat-square)](https://github.com/nitely/Spirit/actions?query=workflow%3ACI)
-[![Coverage Status](https://img.shields.io/coveralls/nitely/Spirit/master.svg?style=flat-square)](https://coveralls.io/r/nitely/Spirit)
-[![pypi](https://img.shields.io/pypi/v/django-spirit.svg?style=flat-square)](https://pypi.python.org/pypi/django-spirit)
-[![licence](https://img.shields.io/pypi/l/django-spirit.svg?style=flat-square)](https://raw.githubusercontent.com/nitely/Spirit/master/LICENSE)
+This is a [Spirit Project](https://github.com/nitely/Spirit) fork that serves as part of the validation process of the [django-cloud-deployer](https://pypi.org/project/django-cloud-deployer/) plugin package that was developed as a Proof of Concept for a part of my Master's Degree thesis work.
 
-Spirit is a Python based forum built using the Django framework.
+Feel free to [try out the deployment](http://spirit.thesis.ruialves.me/).
 
-To see it in action, please visit [The Spirit Project](http://spirit-project.com/).
+## Implemented Changes
 
-## Documentation
+- Updated project requirements to feature the `django-cloud-deployer` package dependency
+- Added a Django app called `cloud_spirit` created with the [django-spirit](https://pypi.org/project/django-spirit/) package itself
+- Updated the app's `settings.py` configurations to read information (such as database configurations) from environment variables
+- Updated app's `urls.py` routes with `runInPaaS` and `runInFaaS` annotations
 
-Docs can be found at [spirit.readthedocs.io](http://spirit.readthedocs.io/en/latest/)
+## Cloud Deployment Annotations - System Partitioning
 
-## Compatibility
+The system's url endpoints were seperated (between PaaS and FaaS) as following:
 
-* Python 3.5, 3.6, 3.7, and 3.8 (recommended)
-* Django 2.2 LTS (recommended), 3.0, and 3.1
-* PostgreSQL (recommended), MySQL, Oracle Database and SQLite
+- Running in FaaS:
+    - `admin/*` routes
+    - `category/*` routes
+    - `search/*` routes
+    - `media/*` routes
+- Running in PaaS:
+    - `user/*` routes
+    - `topic/*` routes
+    - `comment/*` routes
 
-Constrained by "[What Python version can I use with Django?](https://docs.djangoproject.com/en/dev/faq/install/#what-python-version-can-i-use-with-django)"
+## Replicate this deployment
 
-## Usage
+First, please refer to the [django-cloud-deployer](https://pypi.org/project/django-cloud-deployer/) package documentation.
 
-> New in Spirit 0.5
+- Install the requirements with `pip install -r requirements.txt`
+- Configure the project:
+    - Create a `.env` file with the required environment variables
+    - Apply any required migrations with `python manage.py migrate`
+    - Create database cache tables with `python manage.py createcachetable` 
+- (*Optional*) Check which urls will run in which cloud service with the package's `check_deploy` command, with `python -m django_cloud_deployer check_deploy`
+- Deploy the project with `python -m django_cloud_deployer deploy heroku azure`
 
-```
-pip install django-spirit
-spirit startproject mysite
-cd mysite
-python manage.py spiritinstall
-python manage.py createsuperuser
-python manage.py runserver
-```
+## Notes and other regards
 
-Visit [http://127.0.0.1:8000](http://127.0.0.1:8000)
-
-For detailed setup docs, see [spirit.readthedocs.io](http://spirit.readthedocs.io/en/latest/)
-
-## Testing
-
-```
-python runtests.py
-```
-
-## License
-
-MIT
-
-## Sponsors
-
-[<img src="https://opensource.nyc3.cdn.digitaloceanspaces.com/attribution/assets/PoweredByDO/DO_Powered_by_Badge_blue.svg" width="201" alt="Digital Ocean">](https://m.do.co/c/b8b19b89a73b)
+- An SMTP server was not configured for this deployment (since it was out of the scope of the validation purposes), and thus account creation is disabled
+- A test account under the username `Mary_Lawrance` and password `password`
+- The DNS configuration was made manually (it was out of the scope of the validation purposes) and is not part of the package deployment script as of now; However, it may be tackled as future work
